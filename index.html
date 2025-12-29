@@ -252,6 +252,12 @@
             transform: translate(-50%, -100%) scale(1.2);
         }
 
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
         .restart-button {
             padding: 10px 20px;
             font-size: 1.2rem;
@@ -260,7 +266,6 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 20px;
             box-shadow: 0 4px #0056b3;
             transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
         }
@@ -272,6 +277,63 @@
         .restart-button:active {
             transform: translateY(4px);
             box-shadow: 0 0 #0056b3;
+        }
+
+        #close-button {
+            background-color: #dc3545; /* Red color */
+            box-shadow: 0 4px #c82333;
+        }
+
+        #close-button:hover {
+            background-color: #c82333;
+        }
+
+        #close-button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 #c82333;
+        }
+
+        /* --- 캐릭터 외형 변형 스타일 --- */
+
+        /* 스타일 1: 갈색 머리, 밝은 피부 */
+        .style-1 .hair {
+            background-color: #8B4513; /* SaddleBrown */
+        }
+        .style-1.ahjussi-head {
+            background-color: #FFDEAD; /* NavajoWhite */
+        }
+        .style-1 .ear {
+            background-color: #FFDEAD;
+        }
+        .style-1 .pupil {
+            background-color: #4682B4; /* SteelBlue */
+        }
+
+        /* 스타일 2: 금발 머리, 안경 */
+        .style-2 .hair {
+            background-color: #FFD700; /* Gold */
+        }
+        /* 안경 */
+        .style-2 .eye::before {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #333;
+            border-radius: 50%;
+            top: -10px;
+            left: -15px;
+            z-index: 50;
+        }
+        /* 안경 연결부 */
+        .style-2 .eye.left::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 4px;
+            background: #333;
+            top: 15px;
+            right: -55px;
         }
     </style>
 </head>
@@ -305,7 +367,10 @@
             <div id="ouch-text" class="ouch-text">따끔!</div>
         </div>
 
-        <button id="restart-button" class="restart-button" onclick="restartGame()">게임 재시작</button>
+        <div class="button-container">
+            <button id="restart-button" class="restart-button" onclick="restartGame()">게임 재시작</button>
+            <button id="close-button" class="restart-button">닫기</button>
+        </div>
     </div>
 
     <script>
@@ -582,6 +647,15 @@
          * 게임을 초기화하고 다시 시작합니다.
          */
         function restartGame() {
+            // 캐릭터 외형 랜덤화
+            const styles = ['default', 'style-1', 'style-2'];
+            const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+
+            ahjussiHead.classList.remove('style-1', 'style-2'); // 기존 스타일 제거
+            if (randomStyle !== 'default') {
+                ahjussiHead.classList.add(randomStyle);
+            }
+
             // 기존 수염 모두 제거
             const existingBeards = document.querySelectorAll('.beard-hair');
             existingBeards.forEach(beard => beard.remove());
@@ -616,7 +690,12 @@
         }
 
         // 게임 시작
-        window.onload = restartGame;
+        window.onload = function() {
+            restartGame();
+            document.getElementById('close-button').addEventListener('click', function() {
+                window.close();
+            });
+        };
     </script>
 </body>
 
