@@ -87,7 +87,6 @@
             border: 6px solid #4a2c00;
             border-radius: 50%;
             top: 150px;
-            z-index: -1;
         }
 
         .ear.left {
@@ -96,6 +95,18 @@
 
         .ear.right {
             right: -30px;
+        }
+
+        .ear::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            background: #e6b89c; /* Inner ear tone */
+            border-radius: 50%;
+            top: 15px;
+            left: 10px;
+            transform: rotate(15deg);
         }
 
 
@@ -304,6 +315,9 @@
         }
         .style-1 .ear {
             background-color: #FFDEAD;
+        }
+        .style-1 .ear::before {
+            background-color: #f3c28a;
         }
         .style-1 .pupil {
             background-color: #4682B4; /* SteelBlue */
