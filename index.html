@@ -315,6 +315,48 @@
         const ouchText = document.getElementById('ouch-text');
         const timeDisplayElement = document.getElementById('time-display'); // 새 요소
 
+        // Web Audio API 초기화
+        let audioCtx;
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.error('Web Audio API is not supported in this browser');
+        }
+
+        /**
+         * '악!' 소리를 재생합니다.
+         */
+        function playOuchSound() {
+            if (!audioCtx) return;
+
+            // 사용자가 페이지와 상호 작용할 때까지 AudioContext가 일시 중단될 수 있습니다.
+            // 사운드를 재생하기 전에 재개해야 합니다.
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            // 연결: Oscillator -> Gain -> Destination
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            // 파형 설정 (sawtooth가 날카로운 소리에 적합)
+            oscillator.type = 'sawtooth';
+
+            // 주파수 설정 (높은 음에서 시작)
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+
+            // 볼륨 설정 (처음엔 최대, 빠르게 감소)
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); // 0.2초에 걸쳐 소리 감소
+
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.2); // 0.2초 후 정지
+        }
+
+
         const NUM_BEARDS = 40; // 생성할 수염 개수
         const TIME_LIMIT = 30; // 제한 시간 (초)
 
@@ -411,7 +453,8 @@
             pluckCount++;
             pluckCountElement.textContent = pluckCount;
 
-            // 3. 아저씨 표정 변경
+            // 3. 아저씨 표정 변경 및 효과음 재생
+            playOuchSound();
             showPainExpression();
 
             // 4. 게임 종료 확인
